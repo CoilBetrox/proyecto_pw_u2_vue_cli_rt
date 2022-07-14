@@ -19,7 +19,18 @@
 export default {
     // no olvidarse this
     name: "Contador123",
-    props:["titulo", "inicio"],
+    props:{
+        titulo:String, 
+        inicio:{
+            type: Number,
+            required: false,
+            default: 100,
+            validator(value){
+                //validation return true or false
+                return value>0
+            }
+        }
+    },
     data () {
         return{
             numero: this.inicio
