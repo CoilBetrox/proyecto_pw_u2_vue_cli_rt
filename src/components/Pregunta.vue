@@ -1,12 +1,16 @@
 <template>
-  <img src="https://via.placeholder.com/250" alt="no encontrada" />
+  <!--<img v-bind:src="imagen" alt="no encontrada" /> -->
+  <img v-if="imagen" v-bind:src="imagen" alt="no encontrada" />
+  
   <div class="bg-oscuro"></div>
 
 <div class="pregunta-container">
   <input v-model="pregunta" type="text" placeholder="Hazme una pregunta"/>
   <p>Termina con un signo de interrogación (?)</p>
-  <h2>{{pregunta}}</h2>
-  <h1>Si, No, ... Pensando</h1>
+  <div v-if="preguntaValida">
+    <h2>{{ pregunta }}</h2>
+    <h1>{{ respuesta }}</h1>
+  </div>
 </div>
 
 </template>
@@ -15,26 +19,45 @@
 export default {
     data(){
         return{
-            pregunta: 'Hola Mundo'
+            pregunta: 'Hola Mundo',
+            respuesta: null,
+            imagen: null,
+            preguntaValida: false,
         } 
     },
     methods:{
         async obtenerRespuesta(){ 
-            const data = await fetch('https://yesno.wtf/#api').then(r=>r.json())
-            console.log(data)
-        }
+            this.respuesta = "Pensando..."
+            this.respuesta = "Pensando..."
+            
+            const { answer, image } = await fetch('https://yesno.wtf/api').then(r=>r.json());
+            this.respuesta = "Pensando..."
+
+            console.log("RESPUESTA")
+            console.log(answer)
+            console.log(image)
+            this.respuesta = answer;
+            this.imagen = image
+        },
+        async consultaCovid(){
+            const data = await fetch('https://api.covidtracking.com/v1/us/current.json').then(r=>r.json());
+            const {negative}=data[0]
+            console.log(negative)
+        },
+        
     },
     watch:{ //observador
         pregunta(value,oldValue){
          console.log(value)
          console.log(oldValue)
          console.log(value.includes('?'));
-         if(!value.includes('?')) return;
 
+         if(!value.includes('?')) return;
+         this.preguntaValida = true;
          console.log('Si Incluye')
          //Llamar y consultar al API
          this.obtenerRespuesta();
-
+         this.consultaCovid();
        
         }
     }
